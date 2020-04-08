@@ -30,7 +30,7 @@ def filter_chat_user(chat: Optional[str], user: Optional[str]) -> Dict[str, Opti
     return dict(chat_id=chat, user_id=user)
 
 
-class MotorStorage(BaseStorage):
+class MongoStorage(BaseStorage):
     def __init__(self, mongo_client: AsyncIOMotorClient, mongo_database: AsyncIOMotorDatabase) -> None:
         self.client = mongo_client
         self.db = mongo_database
