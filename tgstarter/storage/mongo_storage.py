@@ -7,6 +7,7 @@ from typing import (
 )
 import functools
 
+import addict
 from aiogram.dispatcher.storage import BaseStorage
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
@@ -31,9 +32,18 @@ def filter_chat_user(chat: Optional[str], user: Optional[str]) -> Dict[str, Opti
 
 
 class MongoStorage(BaseStorage):
-    def __init__(self, mongo_client: AsyncIOMotorClient, mongo_database: AsyncIOMotorDatabase) -> None:
+    def __init__(
+        self,
+        mongo_client: AsyncIOMotorClient,
+        mongo_database: AsyncIOMotorDatabase,
+        collection_name: str = 'users'
+    ) -> None:
         self.client = mongo_client
-        self.db = mongo_database
+        self.database = mongo_database
+        self.collection_name = collection_name
+        self.db = addict.Dict(
+            dict(users=self.database[collection_name])
+        )
 
     async def close(self) -> None:
         pass
