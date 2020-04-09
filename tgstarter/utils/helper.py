@@ -1,9 +1,19 @@
 from typing import Any, List, Callable
 from enum import Enum
+from textwrap import dedent
+
+import jinja2
 
 
 def function_fullname(function: Callable[..., Any]) -> str:
     return f'{function.__module__}.{function.__name__}'
+
+
+def get_template_function(jinja2_env: jinja2.Environment) -> Callable[..., Any]:
+    def template(source: str) -> jinja2.Template:
+        return jinja2_env.from_string(source=dedent(source))
+
+    return template
 
 
 class Item:
