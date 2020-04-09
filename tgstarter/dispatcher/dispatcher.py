@@ -48,7 +48,7 @@ class Dispatcher(aiogram.Dispatcher):
 
     def state_handler(
         self,
-        *,
+        *args: Any,
         primary_state: bool = False,
         bound: Callable[..., Any] = aiogram.Dispatcher.message_handler,
         **kwargs: Any
@@ -63,7 +63,7 @@ class Dispatcher(aiogram.Dispatcher):
 
             result = None  # for a linter :)
             for state in states:
-                handler = bound(state=state, **kwargs)
+                handler = bound(*args, state=state, **kwargs)
                 result = handler(callback)
             return result
 
