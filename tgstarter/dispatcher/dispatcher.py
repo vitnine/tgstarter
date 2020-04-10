@@ -55,7 +55,14 @@ class Dispatcher(aiogram.Dispatcher):
     ) -> Callable[..., Any]:
 
         def wrapper(callback: Callable[..., Any]) -> Any:
-            states = [locals().get('state') or function_fullname(callback)]
+            state = kwargs.get('state')
+            if state is None:
+                state = function_fullname(callback)
+            else:
+                if inspect.iscoroutinefunction(state):
+                    state = function_fullname(state)
+
+            states = [state]
 
             callback = self.__state_switcher(callback)
             if primary_state:
