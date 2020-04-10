@@ -14,20 +14,20 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 def check_address(*args: Any, **kwargs: Any) -> Any:
     addresses = BaseStorage.check_address(*args, **kwargs)
-    return tuple(map(str, addresses))
+    return tuple(map(int, addresses))
 
 
 def resolve_address(function: Callable[..., Any]) -> Callable[..., Any]:
 
     @functools.wraps(function)
-    async def wrapper(self, *, chat: Optional[str], user: Optional[str], **kwargs) -> Tuple[int, int]:
+    async def wrapper(self, *, chat: Optional[int], user: Optional[int], **kwargs) -> Tuple[int, int]:
         chat, user = check_address(chat=chat, user=user)
         return await function(self, chat=chat, user=user, **kwargs)
 
     return wrapper
 
 
-def filter_chat_user(chat: Optional[str], user: Optional[str]) -> Dict[str, Optional[str]]:
+def filter_chat_user(chat: Optional[int], user: Optional[int]) -> Dict[str, Optional[int]]:
     return dict(chat_id=chat, user_id=user)
 
 
@@ -58,8 +58,8 @@ class MongoStorage(BaseStorage):
     async def get_state(
         self,
         *,
-        chat: Optional[str] = None,
-        user: Optional[str] = None,
+        chat: Optional[int] = None,
+        user: Optional[int] = None,
         default: Optional[str] = None
     ) -> Optional[str]:
 
@@ -79,8 +79,8 @@ class MongoStorage(BaseStorage):
     async def set_state(
         self,
         *,
-        chat: Optional[str] = None,
-        user: Optional[str] = None,
+        chat: Optional[int] = None,
+        user: Optional[int] = None,
         state: Optional[str] = None
     ) -> None:
 
@@ -99,8 +99,8 @@ class MongoStorage(BaseStorage):
     async def get_data(
         self,
         *,
-        chat: Optional[str] = None,
-        user: Optional[str] = None,
+        chat: Optional[int] = None,
+        user: Optional[int] = None,
         default: Optional[Dict] = None
     ) -> Optional[Dict[Any, Any]]:
 
@@ -121,8 +121,8 @@ class MongoStorage(BaseStorage):
         self,
         *,
         data: Optional[Dict],
-        chat: Optional[str] = None,
-        user: Optional[str] = None
+        chat: Optional[int] = None,
+        user: Optional[int] = None
     ) -> None:
 
         await self.db.users.update_one(
@@ -139,7 +139,7 @@ class MongoStorage(BaseStorage):
     update_data = set_data
 
     @resolve_address
-    async def reset_data(self, *, chat: Optional[str] = None, user: Optional[str] = None) -> None:
+    async def reset_data(self, *, chat: Optional[int] = None, user: Optional[int] = None) -> None:
         await self.db.users.update_one(
             filter=filter_chat_user(
                 chat=chat,
@@ -155,19 +155,19 @@ class MongoStorage(BaseStorage):
     # # #
 
     @resolve_address
-    async def reset_state(self, *, chat: Optional[str] = None, user: Optional[str] = None) -> None:
+    async def reset_state(self, *, chat: Optional[int] = None, user: Optional[int] = None) -> None:
         raise NotImplementedError
 
     @resolve_address
-    async def finish(self, *, chat: Optional[str] = None, user: Optional[str] = None) -> None:
+    async def finish(self, *, chat: Optional[int] = None, user: Optional[int] = None) -> None:
         raise NotImplementedError
 
     @resolve_address
     async def get_bucket(
         self,
         *,
-        chat: Optional[str] = None,
-        user: Optional[str] = None,
+        chat: Optional[int] = None,
+        user: Optional[int] = None,
         default: Optional[Dict] = None
     ) -> Optional[Dict]:
 
@@ -187,8 +187,8 @@ class MongoStorage(BaseStorage):
     async def set_bucket(
         self,
         *,
-        chat: Optional[str] = None,
-        user: Optional[str] = None,
+        chat: Optional[int] = None,
+        user: Optional[int] = None,
         bucket: Optional[Dict] = None
     ) -> None:
 
@@ -209,8 +209,8 @@ class MongoStorage(BaseStorage):
     async def update_bucket(
         self,
         *,
-        chat: Optional[str] = None,
-        user: Optional[str] = None,
+        chat: Optional[int] = None,
+        user: Optional[int] = None,
         bucket: Optional[Dict] = None,
         **kwargs
     ) -> None:
@@ -228,7 +228,7 @@ class MongoStorage(BaseStorage):
         )
 
     @resolve_address
-    async def reset_bucket(self, *, chat: Optional[str] = None, user: Optional[str] = None) -> None:
+    async def reset_bucket(self, *, chat: Optional[int] = None, user: Optional[int] = None) -> None:
         await self.db.users.update_one(
             filter=filter_chat_user(
                 chat=chat,
