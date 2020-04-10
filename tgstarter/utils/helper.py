@@ -1,7 +1,7 @@
 from typing import (
     Any,
     List,
-    Callable,
+    Callable, Optional,
     Union,
     Dict,
 )
@@ -10,6 +10,13 @@ from textwrap import dedent
 
 import jinja2
 from aiogram import types
+
+
+def user_fullname(first_name: str, last_name: Optional[str] = None) -> str:
+    if not last_name:
+        return first_name
+    else:
+        return f'{first_name} {last_name}'
 
 
 def function_fullname(function: Callable[..., Any]) -> str:
