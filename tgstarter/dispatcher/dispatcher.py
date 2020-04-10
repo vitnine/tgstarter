@@ -55,7 +55,7 @@ class Dispatcher(aiogram.Dispatcher):
     ) -> Callable[..., Any]:
 
         def wrapper(callback: Callable[..., Any]) -> Any:
-            state = kwargs.get('state')
+            state = kwargs.pop('state', None)
             if state is None:
                 state = function_fullname(callback)
             else:
