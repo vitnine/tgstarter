@@ -91,3 +91,8 @@ class NamedEnum(Enum):
     @staticmethod
     def _generate_next_value_(name: str, start: int, count: int, last_values: List[Any]) -> str:
         return name
+
+
+class FlagEnum(NamedEnum):
+    def __str__(self) -> str:
+        return str(self.value)
