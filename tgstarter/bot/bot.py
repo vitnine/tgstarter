@@ -28,6 +28,7 @@ class Bot(aiogram.Bot):
         ignore_keys = (
             'text',
             'max_length',
+            'self',
         )
         for key in ignore_keys:
             del kwargs[key]
