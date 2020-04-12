@@ -4,12 +4,21 @@ from typing import (
     Dict,
     Tuple,
     Callable,
+    Type,
 )
+import types
 import functools
+import datetime
+import traceback
 
 import addict
 from aiogram.dispatcher.storage import BaseStorage
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from aiogram.types import Message
+from bson.objectid import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase, AsyncIOMotorCollection
+import jinja2
+
+from tgstarter.models import storage as models
 
 
 def check_address(*args: Any, **kwargs: Any) -> Any:
@@ -240,3 +249,108 @@ class MongoStorage(BaseStorage):
                 }
             }
         )
+
+
+ExcInfo = Tuple[
+    Type[BaseException],
+    BaseException,
+    types.TracebackType
+]
+
+
+class MongoLogger:
+    def __init__(
+        self,
+        *,
+        mongo_client: AsyncIOMotorClient,
+        mongo_database: AsyncIOMotorDatabase,
+        collection_name: str = 'logs',
+        message_format: jinja2.Template,
+        timezone: datetime.timezone,
+    ) -> None:
+        self.client = mongo_client
+        self.database = mongo_database
+        self.collection_name = collection_name
+        self.logs: AsyncIOMotorCollection = self.database[collection_name]
+
+        self.message_format = message_format
+        self.timezone = timezone
+
+    def render_message(
+        self,
+        date_time: datetime.datetime,
+        object_id: ObjectId,
+        exception: Dict[str, str]
+    ) -> str:
+        return self.message_format.render(
+            error_type=exception['type'],
+            error_value=exception['value'],
+            datetime=datetime,
+            object_id=object_id,
+            traceback=exception['traceback'],
+            # separator=self.SEPARATOR,
+        )
+
+    def prepare_exception(self, exc_info: ExcInfo) -> Dict[str, str]:
+        type_, value, tb = exc_info
+        tb = traceback.TracebackException(type_, value, tb)
+        return {
+            'type': type_.__name__,
+            'value': str(value),
+            'traceback': ''.join(tb.format()),
+        }
+
+    async def log(
+        self,
+        level: models.LogLevel,
+        type: models.LogType,
+        data: Dict[str, Any],
+        user_info: Optional[models.UserInfo] = None,
+        from_bot: bool = False,
+        exc_info: Optional[ExcInfo] = None
+    ) -> Optional[str]:
+
+        if exc_info is not None:
+            exception = self.prepare_exception(exc_info)
+        else:
+            exception = None
+
+        date_time = datetime.datetime.now(tz=self.timezone)
+        model = models.Log(
+            datetime=date_time,
+            level=level,
+            type=type,
+            came_from=models.EventFrom.USER if not from_bot else models.EventFrom.BOT,
+            user_info=user_info,
+            data=data,
+            exception=exception
+        )
+        document = model.dict()
+        insert_result = await self.logs.insert_one(document)
+        if exception is not None:
+            return self.render_message(
+                date_time=date_time,
+                object_id=insert_result.inserted_id,
+                exception=exception
+            )
+
+    async def info_from_msg(self, msg: Message, exc_info: Optional[ExcInfo]) -> Optional[str]:
+        raise NotImplementedError
+
+    async def debug(self) -> None:
+        raise NotImplementedError
+
+    async def info(self) -> None:
+        raise NotImplementedError
+
+    async def warning(self) -> None:
+        raise NotImplementedError
+
+    async def error(self) -> None:
+        raise NotImplementedError
+
+    async def critical(self) -> None:
+        raise NotImplementedError
+
+    async def exception(self) -> None:
+        raise NotImplementedError
