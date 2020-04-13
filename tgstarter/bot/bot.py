@@ -26,9 +26,9 @@ class Bot(aiogram.Bot):
         """No parse_mode is supported"""
         kwargs = locals()
         ignore_keys = (
+            'self',
             'text',
             'max_length',
-            'self',
         )
         for key in ignore_keys:
             del kwargs[key]
