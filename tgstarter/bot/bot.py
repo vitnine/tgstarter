@@ -55,15 +55,20 @@ class Bot(aiogram.Bot):
         action: str = types.ChatActions.TYPING,
         delay: int = 5
     ) -> typing.Any:
-        async def infinite_chat_action() -> None:
+        async def infinite_chat_action(tracked_task: asyncio.Task) -> None:
             while True:
-                await self.send_chat_action(chat_id=chat_id, action=action)
-                await asyncio.sleep(delay)
+                if tracked_task.done():
+                    break
+                else:
+                    await self.send_chat_action(chat_id=chat_id, action=action)
+                    await asyncio.sleep(delay)
 
-        tasks = [
-            asyncio.create_task(coro)
-            for coro in (infinite_chat_action(), coroutine)
-        ]
+        tracked_task = asyncio.create_task(coroutine)
+        infinite_chat_action_task = asyncio.create_task(
+            infinite_chat_action(tracked_task)
+        )
+        tasks = [infinite_chat_action_task, tracked_task]
+
         done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         coro = next(iter(done))
         return coro.result()
