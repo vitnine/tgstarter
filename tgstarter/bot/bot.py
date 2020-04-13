@@ -1,3 +1,4 @@
+import asyncio
 import typing
 
 import aiogram
@@ -46,3 +47,23 @@ class Bot(aiogram.Bot):
             cut_text = text[start_index:end_index]
 
         return result_messages
+
+    async def send_with_action(
+        self,
+        chat_id: int,
+        coroutine: typing.Awaitable,
+        action: str = types.ChatActions.TYPING,
+        delay: int = 5
+    ) -> typing.Any:
+        async def infinite_chat_action() -> None:
+            while True:
+                await self.send_chat_action(chat_id=chat_id, action=action)
+                await asyncio.sleep(delay)
+
+        tasks = [
+            asyncio.create_task(coro)
+            for coro in (coroutine, infinite_chat_action())
+        ]
+        done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+        coro = next(iter(done))
+        return coro.result()
