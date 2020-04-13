@@ -62,7 +62,7 @@ class Bot(aiogram.Bot):
 
         tasks = [
             asyncio.create_task(coro)
-            for coro in (coroutine, infinite_chat_action())
+            for coro in (infinite_chat_action(), coroutine)
         ]
         done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         coro = next(iter(done))
