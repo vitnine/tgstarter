@@ -42,6 +42,15 @@ class Dispatcher(aiogram.Dispatcher):
 
         return wrapper
 
+    def __import_states(self) -> None:
+        path = Path(self.__states_directory)
+        for name in module_names(path):
+            importlib.import_module(name=name)
+
+    async def start_polling(self, *args: Any, **kwargs: Any) -> Any:
+        self.__import_states()
+        return await super().start_polling(*args, **kwargs)
+
     def state_handler(
         self,
         *args: Any,
@@ -77,11 +86,9 @@ class Dispatcher(aiogram.Dispatcher):
 
         return wrapper
 
-    def __import_states(self) -> None:
-        path = Path(self.__states_directory)
-        for name in module_names(path):
-            importlib.import_module(name=name)
+    def any_update_handler(self) -> Callable:
+        def wrapper(callback: Callable) -> Callable:
+            self.updates_handler.register(callback, index=0)
+            return callback
 
-    async def start_polling(self, *args: Any, **kwargs: Any) -> Any:
-        self.__import_states()
-        return await super().start_polling(*args, **kwargs)
+        return wrapper
