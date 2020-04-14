@@ -51,24 +51,29 @@ class Dispatcher(aiogram.Dispatcher):
     ) -> Callable[..., Any]:
 
         def wrapper(callback: Callable[..., Any]) -> Any:
-            state = kwargs.pop('state', None)
-            if state is None:
-                state = function_fullname(callback)
+            if bound == self.errors_handler:
+                handler = bound(*args, **kwargs)
+                return handler(callback)
+
             else:
-                if inspect.iscoroutinefunction(state):
-                    state = function_fullname(state)
+                state = kwargs.pop('state', None)
+                if state is None:
+                    state = function_fullname(callback)
+                else:
+                    if inspect.iscoroutinefunction(state):
+                        state = function_fullname(state)
 
-            states = [state]
+                states = [state]
 
-            callback = self.__state_switcher(callback)
-            if primary_state:
-                states.append(None)
+                callback = self.__state_switcher(callback)
+                if primary_state:
+                    states.append(None)
 
-            result = None  # for a linter :)
-            for state in states:
-                handler = bound(*args, state=state, **kwargs)
-                result = handler(callback)
-            return result
+                result = None  # for a linter :)
+                for state in states:
+                    handler = bound(*args, state=state, **kwargs)
+                    result = handler(callback)
+                return result
 
         return wrapper
 
