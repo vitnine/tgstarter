@@ -1,15 +1,23 @@
 from typing import (
     Any,
     List,
-    Callable, Optional,
+    Callable,
+    Optional,
     Union,
     Dict,
 )
 from enum import Enum
 from textwrap import dedent
 
+from lxml import html
 import jinja2
 from aiogram import types
+
+
+def string_fits(source: str, max_length: int = 4096) -> bool:
+    element = html.fromstring(source)
+    text = element.text_content()
+    return len(text) <= max_length
 
 
 def user_fullname(first_name: str, last_name: Optional[str] = None) -> str:
