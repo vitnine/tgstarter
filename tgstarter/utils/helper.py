@@ -14,9 +14,13 @@ import jinja2
 from aiogram import types
 
 
-def string_fits(source: str, max_length: int = 4096) -> bool:
+def clear_text(source: str) -> str:
     element = html.fromstring(source)
-    text = element.text_content()
+    return element.text_content()
+
+
+def string_fits(source: str, max_length: int = 4096) -> bool:
+    text = clear_text(source)
     return len(text) <= max_length
 
 
