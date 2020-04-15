@@ -47,6 +47,7 @@ class LogTask(BaseModel):
     function_fullname: str
     args: List[Any]
     kwargs: Dict[str, Any]
+    result: Optional[str]
 
 
 class Log(BaseModel):
