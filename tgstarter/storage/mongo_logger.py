@@ -30,13 +30,15 @@ def filter_parameters(params: Dict[str, Any], ignore: List[str]) -> Dict[str, An
 def get_level_logger(level: models.LogLevel) -> Callable:
     async def appropriate_logger(
         self,
-        update: types.Update,
+        update: Optional[types.Update] = None,
+        task: Optional[models.LogTask] = None,
         type: Optional[models.LogType] = None,
         from_bot: bool = False,
         exc_info: Optional[ExcInfo] = None
     ) -> Optional[str]:
         return await self.log(
             update=update,
+            task=task,
             type=type,
             level=level,
             from_bot=from_bot,
@@ -100,9 +102,24 @@ class MongoLogger:
                 'traceback': ''.join(tb.format()),
             }
 
-    def chat_and_user_from_update(self, update: types.Message) -> Tuple[types.Chat, types.User]:
+    def prepare_task(self, task: Optional[models.LogTask]) -> Optional[models.LogTask]:
+        # TODO: make serialization deeper
+        if task is None:
+            return task
+        if task.args:
+            task.args = list(map(str, task.args))
+        if task.kwargs:
+            task.kwargs = {
+                key: str(value) for key, value in task.kwargs.items()
+            }
+        return task
+
+    def chat_and_user_from_update(self, update: Optional[types.Message]) -> Tuple[types.Chat, types.User]:
         chat = types.Chat()
         user = types.User()
+        if update is None:
+            return chat, user
+
         if update.message:
             user = update.message.from_user
             chat = update.message.chat
@@ -152,6 +169,7 @@ class MongoLogger:
         exc_info: Optional[ExcInfo] = None
     ) -> Optional[str]:
 
+        task = self.prepare_task(task)
         exception = self.prepare_exception(exc_info) if exc_info is not None else None
         date_time = datetime.datetime.utcnow()
         chat, user = self.chat_and_user_from_update(update=update)
@@ -165,7 +183,7 @@ class MongoLogger:
                 chat=chat.to_python()
             ),
             update=update.to_python() if update is not None else None,
-            task=task if task else None,
+            task=task,
             exception=exception
         )
         document = model.dict()
