@@ -1,29 +1,30 @@
 from datetime import datetime
-from enum import auto
+from enum import auto, Enum
 from typing import Optional, Dict, Any
 
 from pydantic import BaseModel
+from aiogram import types
 
 from tgstarter.utils.helper import NamedEnum
 
 
 class EventFrom(str, NamedEnum):
-    USER = auto()
-    BOT = auto()
+    USER: Enum = auto()
+    BOT: Enum = auto()
 
 
 class LogType(str, NamedEnum):
-    EVENT = auto()
-    # NOTIFICATION = auto()
-    TASK = auto()
+    EVENT: Enum = auto()
+    # NOTIFICATION: Enum = auto()
+    TASK: Enum = auto()
 
 
 class LogLevel(str, NamedEnum):
-    DEBUG = auto()
-    INFO = auto()
-    WARNING = auto()
-    ERROR = auto()
-    CRITICAL = auto()
+    DEBUG: Enum = auto()
+    INFO: Enum = auto()
+    WARNING: Enum = auto()
+    ERROR: Enum = auto()
+    CRITICAL: Enum = auto()
 
 
 class ExceptionModel(BaseModel):
@@ -32,9 +33,14 @@ class ExceptionModel(BaseModel):
     traceback: str
 
 
-class UserInfo(BaseModel):
-    user_id: int
-    chat_id: int
+class LogUserInfo(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    # chat: types.Chat
+    # user: types.User
+    chat: Dict[str, Any]
+    user: Dict[str, Any]
 
 
 class Log(BaseModel):
@@ -46,10 +52,10 @@ class Log(BaseModel):
     type: LogType
 
     came_from: EventFrom
-    user_info: Optional[UserInfo]
+    user_info: Optional[LogUserInfo]
     # user_id: int
     # chat_id: int
     # state: Optional[str]
-    data: Dict[str, Any]
+    update: Dict[str, Any]
 
     exception: Optional[ExceptionModel]
