@@ -53,9 +53,9 @@ class MongoLogger:
         *,
         mongo_client: AsyncIOMotorClient,
         mongo_database: AsyncIOMotorDatabase,
-        collection_name: str = 'logs',
         message_format: jinja2.Template,
         timezone: pytz.tzinfo.DstTzInfo,
+        collection_name: str = 'logs',
         default_level: models.LogLevel = models.LogLevel.INFO,
         default_type: models.LogType = models.LogType.EVENT
     ) -> None:
