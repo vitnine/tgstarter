@@ -144,7 +144,8 @@ class MongoLogger:
 
     async def log(
         self,
-        update: types.Update,
+        update: Optional[types.Update] = None,
+        task: Optional[models.LogTask] = None,
         level: Optional[models.LogLevel] = None,
         type: Optional[models.LogType] = None,
         from_bot: bool = False,
@@ -159,8 +160,12 @@ class MongoLogger:
             level=level.value if level else self.default_level.value,
             type=type.value if type else self.default_type,
             came_from=models.EventFrom.USER if not from_bot else models.EventFrom.BOT,
-            user_info=models.LogUserInfo(user=user.to_python(), chat=chat.to_python()),
-            update=update.to_python(),
+            user_info=models.LogUserInfo(
+                user=user.to_python(),
+                chat=chat.to_python()
+            ),
+            update=update.to_python() if update is not None else None,
+            task=task.to_python() if task is not None else None,
             exception=exception
         )
         document = model.dict()

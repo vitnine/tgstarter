@@ -1,9 +1,9 @@
 from datetime import datetime
 from enum import auto, Enum
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from pydantic import BaseModel
-from aiogram import types
+# from aiogram import types
 
 from tgstarter.utils.helper import NamedEnum
 
@@ -43,6 +43,12 @@ class LogUserInfo(BaseModel):
     user: Dict[str, Any]
 
 
+class LogTask(BaseModel):
+    function_fullname: str
+    args: List[Any]
+    kwargs: Dict[str, Any]
+
+
 class Log(BaseModel):
     class Config:
         use_enum_values = True
@@ -53,9 +59,8 @@ class Log(BaseModel):
 
     came_from: EventFrom
     user_info: Optional[LogUserInfo]
-    # user_id: int
-    # chat_id: int
     # state: Optional[str]
-    update: Dict[str, Any]
+    update: Optional[Dict[str, Any]]
+    task: Optional[Dict[str, Any]]
 
     exception: Optional[ExceptionModel]
