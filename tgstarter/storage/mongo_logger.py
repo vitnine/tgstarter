@@ -169,14 +169,14 @@ class MongoLogger:
         exc_info: Optional[ExcInfo] = None
     ) -> Optional[str]:
 
-        task = self.prepare_task(task)
-        exception = self.prepare_exception(exc_info) if exc_info is not None else None
         date_time = datetime.datetime.utcnow()
         chat, user = self.chat_and_user_from_update(update=update)
+        task = self.prepare_task(task)
+        exception = self.prepare_exception(exc_info) if exc_info is not None else None
         model = models.Log(
             datetime=date_time,
             level=level.value if level else self.default_level.value,
-            type=type.value if type else self.default_type,
+            type=type.value if type else self.default_type.value,
             came_from=models.EventFrom.USER if not from_bot else models.EventFrom.BOT,
             user_info=models.LogUserInfo(
                 user=user.to_python(),
