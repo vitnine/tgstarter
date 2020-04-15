@@ -165,7 +165,7 @@ class MongoLogger:
                 chat=chat.to_python()
             ),
             update=update.to_python() if update is not None else None,
-            task=task.to_python() if task is not None else None,
+            task=task if task else None,
             exception=exception
         )
         document = model.dict()
