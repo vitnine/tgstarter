@@ -14,6 +14,14 @@ import jinja2
 from aiogram import types
 
 
+def delete_indentation(text: str) -> str:
+    text = dedent(text)
+    if (text[0], text[-1]) == ('\n', '\n'):
+        return text[1:-1]
+    else:
+        return text
+
+
 def clear_text(source: str) -> str:
     element = html.fromstring(source)
     return element.text_content()
