@@ -2,6 +2,7 @@ from .dispatcher.dispatcher import Dispatcher
 from .storage.mongo_storage import MongoStorage
 from .storage.mongo_logger import MongoLogger
 from .bot.bot import Bot
+from .utils.content import ContentValidator
 from .utils import helper
 
 
@@ -11,6 +12,7 @@ __all__ = (
     'MongoStorage',
     'MongoLogger',
     'Bot',
+    'ContentValidator',
     'helper',
 )
 
