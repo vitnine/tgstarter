@@ -1,12 +1,23 @@
 import types
-from typing import Tuple, Type, Union
+from typing import (
+    TypeVar,
+    Tuple,
+    Type,
+    Union,
+    Callable,
+    Awaitable,
+)
 
 
+FilledExcInfo = Tuple[
+    Type[BaseException],
+    BaseException,
+    types.TracebackType
+]
 ExcInfo = Union[
     Tuple[None, None, None],
-    Tuple[
-        Type[BaseException],
-        BaseException,
-        types.TracebackType
-    ]
+    FilledExcInfo
 ]
+
+AsyncCallbackVar = TypeVar('AsyncCallback', bound=Callable[..., Awaitable])
+Handler = Callable[..., Callable[[AsyncCallbackVar], AsyncCallbackVar]]

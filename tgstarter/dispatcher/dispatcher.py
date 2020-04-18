@@ -11,6 +11,7 @@ import functools
 import aiogram
 
 from ..utils.helper import function_fullname
+from tgstarter.utils.typing import AsyncCallbackVar, Handler
 
 
 def module_names(path: Path, suffix: str = '.py') -> Iterator[str]:
@@ -23,11 +24,16 @@ def module_names(path: Path, suffix: str = '.py') -> Iterator[str]:
 
 
 class Dispatcher(aiogram.Dispatcher):
-    def __init__(self, states_dir: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        states_dir: str,
+        *args: Any,
+        **kwargs: Any
+    ) -> None:
         self.__states_directory = states_dir
         super().__init__(*args, **kwargs)
 
-    def __state_switcher(self, callback: Callable[..., Any]) -> Callable[..., Any]:
+    def __state_switcher(self, callback: AsyncCallbackVar) -> AsyncCallbackVar:
 
         @functools.wraps(callback)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -53,13 +59,13 @@ class Dispatcher(aiogram.Dispatcher):
 
     def state_handler(
         self,
-        *args: Any,
         primary_state: bool = False,
-        bound: Callable[..., Any] = aiogram.Dispatcher.message_handler,
+        bound: Handler = aiogram.Dispatcher.message_handler,
+        *args: Any,
         **kwargs: Any
-    ) -> Callable[..., Any]:
+    ) -> Callable[[AsyncCallbackVar], Any]:
 
-        def wrapper(callback: Callable[..., Any]) -> Any:
+        def wrapper(callback: AsyncCallbackVar) -> Any:
             if bound == self.errors_handler:
                 handler = bound(*args, **kwargs)
                 return handler(callback)
@@ -86,8 +92,8 @@ class Dispatcher(aiogram.Dispatcher):
 
         return wrapper
 
-    def any_update_handler(self) -> Callable:
-        def wrapper(callback: Callable) -> Callable:
+    def any_update_handler(self) -> Callable[[AsyncCallbackVar], AsyncCallbackVar]:
+        def wrapper(callback: AsyncCallbackVar) -> AsyncCallbackVar:
             self.updates_handler.register(callback, index=0)
             return callback
 

@@ -1,30 +1,28 @@
 from datetime import datetime
-from enum import auto, Enum
 from typing import Optional, Dict, Any, List
 
 from pydantic import BaseModel
-# from aiogram import types
 
-from tgstarter.utils.helper import NamedEnum
+from tgstarter.utils.helper import NamedEnum, auto
 
 
 class EventFrom(str, NamedEnum):
-    USER: Enum = auto()
-    BOT: Enum = auto()
+    USER = auto()
+    BOT = auto()
 
 
 class LogType(str, NamedEnum):
-    EVENT: Enum = auto()
-    # NOTIFICATION: Enum = auto()
-    TASK: Enum = auto()
+    EVENT = auto()
+    # NOTIFICATION = auto()
+    TASK = auto()
 
 
 class LogLevel(str, NamedEnum):
-    DEBUG: Enum = auto()
-    INFO: Enum = auto()
-    WARNING: Enum = auto()
-    ERROR: Enum = auto()
-    CRITICAL: Enum = auto()
+    DEBUG = auto()
+    INFO = auto()
+    WARNING = auto()
+    ERROR = auto()
+    CRITICAL = auto()
 
 
 class ExceptionModel(BaseModel):

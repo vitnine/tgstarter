@@ -1,10 +1,13 @@
 from typing import (
-    Callable, Optional,
+    Awaitable,
+    Callable,
+    Optional,
     Dict,
     Tuple,
     Union,
     Any,
-    List,
+    Mapping,
+    Sequence,
 )
 import datetime
 import traceback
@@ -19,7 +22,7 @@ from tgstarter.models import storage as models
 from tgstarter.utils.typing import ExcInfo
 
 
-def filter_parameters(params: Dict[str, Any], ignore: List[str]) -> Dict[str, Any]:
+def filter_parameters(params: Mapping[str, Any], ignore: Sequence[str]) -> Dict[str, Any]:
     return {
         key: value
         for key, value in params.items()
@@ -27,7 +30,7 @@ def filter_parameters(params: Dict[str, Any], ignore: List[str]) -> Dict[str, An
     }
 
 
-def get_level_logger(level: models.LogLevel) -> Callable:
+def get_level_logger(level: models.LogLevel) -> Callable[..., Awaitable]:
     async def appropriate_logger(
         self,
         update: Optional[types.Update] = None,

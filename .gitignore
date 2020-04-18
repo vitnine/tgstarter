@@ -3,6 +3,7 @@ dist/
 
 env/
 __pycache__/
+.mypy_cache/
 
 *.egg-info/
 *.egg

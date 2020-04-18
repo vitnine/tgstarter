@@ -2,7 +2,8 @@ from typing import (
     Optional,
     Dict,
     Any,
-    Callable, Union,
+    Callable,
+    Union,
 )
 import json
 
@@ -20,7 +21,8 @@ def load_yamls(*paths: str, loader: yaml.Loader) -> Dict[str, Any]:
     return yamls
 
 
-def get_template_constructor(jinja2_env: Optional[jinja2.Environment] = None) -> Callable[..., Any]:
+def get_template_constructor(
+        jinja2_env: Optional[jinja2.Environment] = None) -> Callable[[yaml.Loader, yaml.Node], jinja2.Template]:
 
     def template_constructor(loader: yaml.Loader, node: yaml.Node) -> jinja2.Template:
         if jinja2_env is not None:
@@ -60,7 +62,7 @@ def reply_markup_constructor(loader: yaml.Loader, node: yaml.Node) -> types.Repl
     return reply_markup
 
 
-def get_callback_string_constructor(max_bytes: int = 64) -> Callable[..., Any]:
+def get_callback_string_constructor(max_bytes: int = 64) -> Callable[[yaml.Loader, yaml.Node], str]:
 
     def callback_string_constructor(loader: yaml.Loader, node: yaml.Node) -> str:
         value = node.value

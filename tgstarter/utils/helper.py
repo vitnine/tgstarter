@@ -6,12 +6,16 @@ from typing import (
     Union,
     Dict,
 )
+import enum
 from enum import Enum
 from textwrap import dedent
 
 from lxml import html
 import jinja2
 from aiogram import types
+
+
+auto: Callable[..., Enum] = enum.auto
 
 
 def delete_indentation(text: str) -> str:
@@ -39,11 +43,11 @@ def user_fullname(first_name: str, last_name: Optional[str] = None) -> str:
         return f'{first_name} {last_name}'
 
 
-def function_fullname(function: Callable[..., Any]) -> str:
+def function_fullname(function: Callable) -> str:
     return f'{function.__module__}.{function.__name__}'
 
 
-def get_template_function(jinja2_env: jinja2.Environment) -> Callable[..., Any]:
+def get_template_function(jinja2_env: jinja2.Environment) -> Callable[[str], jinja2.Template]:
     def template(source: str) -> jinja2.Template:
         return jinja2_env.from_string(source=dedent(source))
 
@@ -60,7 +64,11 @@ def button_from_source(button: Union[str, Dict[str, Any]]) -> types.KeyboardButt
 
 
 def ReplyKeyboardMarkup(
-    *source: Union[str, types.KeyboardButton, List[Union[str, types.KeyboardButton]]],
+    *source: Union[
+        str,
+        types.KeyboardButton,
+        List[Union[str, types.KeyboardButton]]
+    ],
     resize_keyboard: bool = True,
     **kwargs: Any
 ) -> types.ReplyKeyboardMarkup:
@@ -98,10 +106,10 @@ class Item:
     def __init__(self, value: Any = None) -> None:
         self._value = value
 
-    def __get__(self, instance, owner) -> str:
+    def __get__(self, instance: Any, owner: Any) -> str:
         return self._value or ''
 
-    def __set_name__(self, owner, name: str) -> None:
+    def __set_name__(self, owner: Any, name: str) -> None:
         if self._value is None:
             self._value = name
 

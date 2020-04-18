@@ -1,6 +1,4 @@
 from typing import (
-    Any,
-    Type,
     Callable,
     TypeVar,
 )
@@ -10,7 +8,7 @@ import inspect
 import jinja2
 
 
-T = TypeVar('T', bound=Type)
+T = TypeVar('T', bound=type)
 
 
 def isbuiltinname(name: str) -> bool:

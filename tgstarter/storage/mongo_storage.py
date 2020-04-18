@@ -3,7 +3,6 @@ from typing import (
     Optional,
     Dict,
     Tuple,
-    Callable,
 )
 import functools
 
@@ -11,13 +10,15 @@ import addict
 from aiogram.dispatcher.storage import BaseStorage
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
+from tgstarter.utils.typing import AsyncCallbackVar
+
 
 def check_address(*args: Any, **kwargs: Any) -> Any:
     addresses = BaseStorage.check_address(*args, **kwargs)
     return tuple(map(int, addresses))
 
 
-def resolve_address(function: Callable[..., Any]) -> Callable[..., Any]:
+def resolve_address(function: AsyncCallbackVar) -> AsyncCallbackVar:
 
     @functools.wraps(function)
     async def wrapper(self, *, chat: Optional[int], user: Optional[int], **kwargs) -> Tuple[int, int]:
