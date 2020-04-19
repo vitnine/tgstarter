@@ -65,7 +65,7 @@ class Dispatcher(aiogram.Dispatcher):
         **kwargs: Any
     ) -> Callable[[AsyncCallbackVar], Any]:
 
-        def wrapper(callback: AsyncCallbackVar) -> Any:
+        def wrapper(callback: AsyncCallbackVar) -> AsyncCallbackVar:
             if bound == self.errors_handler:
                 handler = bound(*args, **kwargs)
                 return handler(callback)
@@ -84,7 +84,6 @@ class Dispatcher(aiogram.Dispatcher):
                 if primary_state:
                     states.append(None)
 
-                result = None  # for a linter :)
                 for state in states:
                     handler = bound(*args, state=state, **kwargs)
                     result = handler(callback)
