@@ -26,8 +26,8 @@ def module_names(path: Path, suffix: str = '.py') -> Iterator[str]:
 class Dispatcher(aiogram.Dispatcher):
     def __init__(
         self,
-        states_dir: str,
         *args: Any,
+        states_dir: str,
         **kwargs: Any
     ) -> None:
         self.__states_directory = states_dir
@@ -59,9 +59,9 @@ class Dispatcher(aiogram.Dispatcher):
 
     def state_handler(
         self,
+        *args: Any,
         primary_state: bool = False,
         bound: Handler = aiogram.Dispatcher.message_handler,
-        *args: Any,
         **kwargs: Any
     ) -> Callable[[AsyncCallbackVar], Any]:
 
