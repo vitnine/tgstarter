@@ -48,14 +48,10 @@ class Dispatcher(aiogram.Dispatcher):
 
         return wrapper
 
-    def __import_states(self) -> None:
+    def import_states(self) -> None:
         path = Path(self.__states_directory)
         for name in module_names(path):
             importlib.import_module(name=name)
-
-    async def start_polling(self, *args: Any, **kwargs: Any) -> Any:
-        self.__import_states()
-        return await super().start_polling(*args, **kwargs)
 
     def state_handler(
         self,

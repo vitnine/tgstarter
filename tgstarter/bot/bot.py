@@ -11,17 +11,9 @@ class Bot(aiogram.Bot):
         self,
         chat_id: typing.Union[base.Integer, base.String],
         text: base.String,
-        # parse_mode: typing.Optional[base.String] = None,
         disable_web_page_preview: typing.Optional[base.Boolean] = None,
         disable_notification: typing.Optional[base.Boolean] = None,
         reply_to_message_id: typing.Optional[base.Integer] = None,
-        # reply_markup: typing.Union[
-        #     None,
-        #     types.InlineKeyboardMarkup,
-        #     types.ReplyKeyboardMarkup,
-        #     types.ReplyKeyboardRemove,
-        #     types.ForceReply,
-        # ] = None,
         max_length: base.Integer = 4096
     ) -> typing.List[types.Message]:
         """No parse_mode is supported"""
