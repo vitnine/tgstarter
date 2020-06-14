@@ -3,6 +3,8 @@ from typing import (
     Any,
     Callable,
     Iterator,
+    Union,
+    Optional,
 )
 from pathlib import Path
 import inspect
@@ -58,6 +60,7 @@ class Dispatcher(aiogram.Dispatcher):
         *args: Any,
         primary_state: bool = False,
         bound: Handler = aiogram.Dispatcher.message_handler,
+        state: Optional[Union[str, Callable]] = None,
         **kwargs: Any
     ) -> Callable[[AsyncCallbackVar], Any]:
 
@@ -67,21 +70,12 @@ class Dispatcher(aiogram.Dispatcher):
                 return handler(callback)
 
             else:
-                state = kwargs.pop('state', None)
-                if state is None:
-                    state = function_fullname(callback)
-                else:
-                    if inspect.iscoroutinefunction(state):
-                        state = function_fullname(state)
-
-                states = [state]
-
                 callback = self.__state_switcher(callback)
-                if primary_state:
-                    states.append(None)
+                states = [state, None] if primary_state and state else [state]
 
-                for state in states:
-                    handler = bound(*args, state=state, **kwargs)
+                result = None
+                for state_ in states:
+                    handler = bound(*args, state=state_, **kwargs)
                     result = handler(callback)
                 return result
 
