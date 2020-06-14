@@ -42,9 +42,8 @@ class Dispatcher(aiogram.Dispatcher):
             chat = aiogram.types.Chat.get_current()
             user = aiogram.types.User.get_current()  # NOTE: maybe not the best way
             result = await callback(*args, **kwargs)
-            if inspect.iscoroutinefunction(result):
-                state = function_fullname(result)
-                await self.storage.set_state(user=user.id, chat=chat.id, state=state)
+            if isinstance(result, str):
+                await self.storage.set_state(user=user.id, chat=chat.id, state=result)
 
             return result
 
