@@ -67,16 +67,13 @@ class Dispatcher(aiogram.Dispatcher):
             if bound == self.errors_handler:
                 handler = bound(*args, **kwargs)
                 return handler(callback)
-
             else:
-                callback = self.__state_switcher(callback)
+                wrapped_callback = self.__state_switcher(callback)
                 states = [state, None] if primary_state and state else [state]
-
-                result = None
                 for state_ in states:
                     handler = bound(*args, state=state_, **kwargs)
-                    result = handler(callback)
-                return result
+                    handler(wrapped_callback)
+                return callback
 
         return wrapper
 
