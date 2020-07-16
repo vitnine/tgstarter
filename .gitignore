@@ -1,6 +1,6 @@
-dist/
 .vscode/
 .idea/
+dist/
 
 env/
 __pycache__/

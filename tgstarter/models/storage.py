@@ -13,7 +13,6 @@ class EventFrom(str, NamedEnum):
 
 class LogType(str, NamedEnum):
     EVENT = auto()
-    # NOTIFICATION = auto()
     TASK = auto()
 
 
@@ -58,7 +57,6 @@ class Log(BaseModel):
 
     came_from: EventFrom
     user_info: Optional[LogUserInfo]
-    # state: Optional[str]
     update: Optional[Dict[str, Any]]
     task: Optional[Dict[str, Any]]
 

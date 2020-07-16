@@ -11,7 +11,7 @@ import jinja2
 T = TypeVar('T', bound=type)
 
 
-def isbuiltinname(name: str) -> bool:
+def is_builtin_name(name: str) -> bool:
     return name.startswith('__') and name.endswith('__')
 
 
@@ -33,7 +33,7 @@ class ContentValidator:
         def wrapper(cls: T) -> T:
             annotations = getattr(cls, '__annotations__', {})
             for field, value in cls.__dict__.items():
-                if not isbuiltinname(field):
+                if not is_builtin_name(field):
                     if inspect.isclass(value):
                         if with_subclasses:
                             value = wrapper(value)
@@ -44,7 +44,6 @@ class ContentValidator:
                         if field in annotations:
                             value_type = annotations[field]
                             if not isinstance(value, value_type):
-                                # TODO: take out this logic to a method
                                 if value_type == jinja2.Template:
                                     if isinstance(value, str):
                                         value = self.create_jinja2_template(value)

@@ -19,5 +19,5 @@ ExcInfo = Union[
     FilledExcInfo
 ]
 
-AsyncCallbackVar = TypeVar('AsyncCallback', bound=Callable[..., Awaitable])
+AsyncCallbackVar = TypeVar('AsyncCallbackVar', bound=Callable[..., Awaitable])
 Handler = Callable[..., Callable[[AsyncCallbackVar], AsyncCallbackVar]]

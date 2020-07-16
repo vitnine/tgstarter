@@ -12,17 +12,18 @@ import jinja2
 from aiogram import types
 
 
-def load_yamls(*paths: str, loader: yaml.Loader) -> Dict[str, Any]:
-    yamls = {}
+def load_yaml_files(*paths: str, loader: yaml.Loader) -> Dict[str, Any]:
+    yaml_files = {}
     for path in paths:
         with open(path) as file:
             yaml_content = yaml.load(stream=file, Loader=loader)
-        yamls[path] = yaml_content
-    return yamls
+        yaml_files[path] = yaml_content
+    return yaml_files
 
 
 def get_template_constructor(
-        jinja2_env: Optional[jinja2.Environment] = None) -> Callable[[yaml.Loader, yaml.Node], jinja2.Template]:
+    jinja2_env: Optional[jinja2.Environment] = None
+) -> Callable[[yaml.Loader, yaml.Node], jinja2.Template]:
 
     def template_constructor(loader: yaml.Loader, node: yaml.Node) -> jinja2.Template:
         if jinja2_env is not None:

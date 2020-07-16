@@ -12,4 +12,4 @@ class Handler:
 
     @abc.abstractmethod
     async def handle(self, event: Any):
-        raise NotImplementedError('handle method must be implemented')
+        raise NotImplementedError('method handle must be implemented')
