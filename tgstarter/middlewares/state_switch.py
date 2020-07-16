@@ -12,8 +12,12 @@ class StateSwitch(BaseMiddleware):
 
     async def on_post_process_update(self, update: Update, results: List[Any], data: dict):
         handler_results, *_ = results
-        last_handler_result = handler_results[-1]
-        if isinstance(last_handler_result, str):
-            user = User.get_current()
-            chat = Chat.get_current()
-            await self.storage.set_state(user=user.id, chat=chat.id, state=last_handler_result)
+        try:
+            last_handler_result = handler_results[-1]
+        except IndexError:
+            pass
+        else:
+            if isinstance(last_handler_result, str):
+                user = User.get_current()
+                chat = Chat.get_current()
+                await self.storage.set_state(user=user.id, chat=chat.id, state=last_handler_result)
