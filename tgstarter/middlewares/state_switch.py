@@ -11,10 +11,10 @@ class StateSwitch(BaseMiddleware):
         self.storage = storage
 
     async def on_post_process_update(self, update: Update, results: List[Any], data: dict):
-        handler_results, *_ = results
         try:
+            handler_results, *_ = results
             last_handler_result = handler_results[-1]
-        except IndexError:
+        except (IndexError, ValueError):
             pass
         else:
             if isinstance(last_handler_result, str):
